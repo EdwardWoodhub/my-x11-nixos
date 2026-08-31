@@ -54,8 +54,8 @@ jobs:
           docker load < result
 
           # 构造完整的 ACR 镜像标签
-          TARGET_IMAGE="${{ secrets.ALIYUN_ACR_REGISTRY }}/nixos-system:latest"
-          TARGET_IMAGE_SHA="${{ secrets.ALIYUN_ACR_REGISTRY }}/nixos-system:${{ github.sha }}"
+          TARGET_IMAGE="${{ secrets.ALIYUN_ACR_REGISTRY }}/my-x11-nixos-vm:latest"
+          TARGET_IMAGE_SHA="${{ secrets.ALIYUN_ACR_REGISTRY }}/my-x11-nixos-vm:${{ github.sha }}"
 
           docker tag nixos-system-update:latest "$TARGET_IMAGE"
           docker tag nixos-system-update:latest "$TARGET_IMAGE_SHA"
