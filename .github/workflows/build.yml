@@ -68,7 +68,8 @@ jobs:
 
           REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           SRC_IMAGE="docker://ghcr.io/${REPO_OWNER}/my-x11-nixos-vm:latest"
-          DEST_IMAGE="docker://${{ secrets.ALIYUN_ACR_REGISTRY }}/my-x11-nixos-vm:latest"
+          DEST_IMAGE="docker://${{ secrets.ALIYUN_ACR_REGISTRY }}/edwardwoodhub/my-x11-nixos-vm:latest"
+          
 
           echo ">>> 正在使用 Skopeo 同步镜像到阿里云 ACR..."
           skopeo copy \
