@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: '33 19 * * *'
 
-  # 2. 仅当 main 分支有代码 push 时触发（排除了 Pull Request）
+  # 2. 仅当 main 分支有代码 push 时触发
   push:
     branches:
       - main
@@ -17,6 +17,9 @@ permissions:
   contents: read
   packages: write # 允许向 GitHub Container Registry (GHCR) 推送镜像
 
+env:
+  NIX_CHANNEL: nixos-26.05
+
 jobs:
   build-and-sync:
     runs-on: ubuntu-latest
@@ -25,10 +28,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. 安装 Nix 工具链
+      # 1. 安装 Nix 工具链并显式绑定 nixpkgs 路径
       - name: Install Nix
         uses: cachix/install-nix-action@v27
         with:
+          nix_path: nixpkgs=channel:${{ env.NIX_CHANNEL }}
           extra_nix_config: |
             experimental-features = nix-command flakes
 
