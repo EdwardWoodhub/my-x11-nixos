@@ -199,7 +199,8 @@
 #   open-vm-tools-headless
     xorg.xf86inputvmmouse
     samba
-    libsForQt5.kdenetwork-filesharing
+#   libsForQt5.kdenetwork-filesharing
+    kdePackages.kdenetwork-filesharing
     fuse
     perl
     mate.pluma
