@@ -222,6 +222,8 @@
     v2ray
     xray
 #   proxychains-ng
+    podman
+    flameshot
     meld   
     vscode
 
