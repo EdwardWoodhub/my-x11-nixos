@@ -212,7 +212,8 @@
     ibus-with-plugins
     ibus-engines.rime
     ibus-engines.libpinyin
-    neofetch
+#   neofetch
+    fastfetch
     google-chrome
     gedit
     trojan-go
