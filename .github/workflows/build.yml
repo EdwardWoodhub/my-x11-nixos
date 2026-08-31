@@ -1,0 +1,65 @@
+name: Build NixOS and Push to Aliyun ACR
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  NIX_CHANNEL: nixos-26.05 # 按需调整为你的目标分支版本
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. 安装 Nix 工具链
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:${{ env.NIX_CHANNEL }}
+
+      # 2. 构建多层系统镜像
+      - name: Build Layered Docker Image
+        run: |
+          nix-build image.nix -o result
+
+      # 3. 对构建出的闭包进行私钥签名（可选但推荐）
+      - name: Sign System Closure
+        if: env.SIGNING_SECRET != ''
+        run: |
+          echo "${{ secrets.SIGNING_SECRET }}" > signing-key.sec
+          TOPLEVEL=$(nix-build image.nix -A config.Env --no-out-link 2>/dev/null | grep TARGET_TOPLEVEL | cut -d= -f2 || true)
+          # 使用私钥为当前 store 路径签名
+          nix sign-paths --key-file signing-key.sec -r result || true
+          rm -f signing-key.sec
+        env:
+          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+
+      # 4. 登录阿里云 ACR
+      - name: Log in to Aliyun ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ALIYUN_ACR_REGISTRY }}
+          username: ${{ secrets.ALIYUN_ACR_USERNAME }}
+          password: ${{ secrets.ALIYUN_ACR_PASSWORD }}
+
+      # 5. 加载并推送到阿里云 ACR
+      - name: Load and Push Image
+        run: |
+          # 从 nix-build 生成的 tar 载入 Docker
+          docker load < result
+
+          # 构造完整的 ACR 镜像标签
+          TARGET_IMAGE="${{ secrets.ALIYUN_ACR_REGISTRY }}/nixos-system:latest"
+          TARGET_IMAGE_SHA="${{ secrets.ALIYUN_ACR_REGISTRY }}/nixos-system:${{ github.sha }}"
+
+          docker tag nixos-system-update:latest "$TARGET_IMAGE"
+          docker tag nixos-system-update:latest "$TARGET_IMAGE_SHA"
+
+          echo ">>> 正在推送到阿里云 ACR: $TARGET_IMAGE"
+          docker push "$TARGET_IMAGE"
+          docker push "$TARGET_IMAGE_SHA"
