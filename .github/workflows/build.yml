@@ -57,8 +57,8 @@ jobs:
           TARGET_IMAGE="${{ secrets.ALIYUN_ACR_REGISTRY }}/my-x11-nixos-vm:latest"
           TARGET_IMAGE_SHA="${{ secrets.ALIYUN_ACR_REGISTRY }}/my-x11-nixos-vm:${{ github.sha }}"
 
-          docker tag nixos-system-update:latest "$TARGET_IMAGE"
-          docker tag nixos-system-update:latest "$TARGET_IMAGE_SHA"
+          docker tag my-x11-nixos-vm:latest "$TARGET_IMAGE"
+          docker tag my-x11-nixos-vm:latest "$TARGET_IMAGE_SHA"
 
           echo ">>> 正在推送到阿里云 ACR: $TARGET_IMAGE"
           docker push "$TARGET_IMAGE"
