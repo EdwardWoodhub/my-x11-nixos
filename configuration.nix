@@ -193,41 +193,43 @@
 # $ nix search wget
   environment.systemPackages = with pkgs; [
     btop
-    kdePackages.discover   
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    wget
     curl
-#   open-vm-tools
-#   open-vm-tools-headless
-    xorg.xf86inputvmmouse
-    samba
-#   libsForQt5.kdenetwork-filesharing
-    kdePackages.kdenetwork-filesharing
-    fuse
-    perl
-    mate.pluma
+    fastfetch
     firefox
+    flameshot
+    fuse
+    gedit
     git
+    google-chrome
     htop
+    ibus
+    ibus-engines.libpinyin
+    ibus-engines.rime
+    ibus-with-plugins
+    kdePackages.discover   
+    kdePackages.kdenetwork-filesharing
+    mate.pluma
+    meld   
+    perl
+    podman
+    samba
+    trojan-go
+    v2ray
+    v2raya
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vscode
+    wget
+    xorg.xf86inputvmmouse
+    xray
 #   fcitx5
 #   fcitx5-configtool
-    ibus
-    ibus-with-plugins
-    ibus-engines.rime
-    ibus-engines.libpinyin
+#   libsForQt5.kdenetwork-filesharing
 #   neofetch
-    fastfetch
-    google-chrome
-    gedit
-    trojan-go
-    v2raya
-    v2ray
-    xray
+#   open-vm-tools
+#   open-vm-tools-headless
 #   proxychains-ng
-    podman
-    flameshot
-    meld   
-    vscode
+
+
 
   ];
 
