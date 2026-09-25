@@ -1,4 +1,4 @@
-name: Build NixOS and Sync to ACR
+name: Build Xfce OS With Nix
 
 on:
   # 1. 每天北京时间 03:33 (UTC 19:33) 定时执行
