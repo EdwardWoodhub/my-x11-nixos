@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # 允许创建 GitHub Release 并上传 ISO 文件
   packages: write # 允许向 GitHub Container Registry (GHCR) 推送镜像
 
 env:
@@ -64,6 +64,43 @@ jobs:
           echo ">>> 正在推送到 GHCR: $GHCR_IMAGE"
           docker push "$GHCR_IMAGE"
 
+      # --- 以下为追加到 steps 末尾的代码 ---
+
+      # 6. 生成发布所用的 Tag 与时间戳
+      - name: Generate Release Tag
+        id: vars
+        run: |
+          TAG_NAME="liveiso-$(date +'%Y%m%d%H%M')"
+          echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
+
+      # 7. 构建 NixOS LiveCD ISO
+      - name: Build NixOS LiveCD ISO
+        run: |
+          # 若你有自定义的 iso.nix 配置，可替换为: nix-build '<nixpkgs/nixos>' -A config.system.build.isoImage -I nixos-config=./iso.nix -o iso-result
+          # 默认使用 nixos 的 installation-cd-graphical 构建 ISO:
+          nix-build '<nixpkgs/nixos>' -A config.system.build.isoImage -I nixos-config='<nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-plasma5.nix>' -o iso-result
+          
+          # 将生成的 ISO 软链接复制为规范命名的文件
+          cp iso-result/iso/*.iso my-x11-nixos-vm.iso
+
+      # 8. 将大于 2GB 的 ISO 切割为多个 1.5GB 的文件
+      - name: Split ISO
+        run: |
+          split -b 1500M my-x11-nixos-vm.iso my-x11-nixos-vm.iso.part-
+
+      # 9. 发布切割后的 ISO 分卷到 GitHub Releases
+      - name: Publish ISO to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        if: |
+          github.event_name == 'push' ||
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch'
+        with:
+          files: my-x11-nixos-vm.iso.part-*
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: "LiveISO Build ${{ steps.vars.outputs.tag }}"
+          generate_release_notes: true
+      
       # 5. 安装 Skopeo 并同步到阿里云 ACR
       - name: Sync Image from GHCR to Aliyun ACR using Skopeo
         run: |
