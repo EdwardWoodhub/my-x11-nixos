@@ -16,8 +16,12 @@
   virtualisation.vmware.guest.enable = lib.mkForce false;
 
   # 4. 配置 LiveCD ISO 的镜像名称与标签
-  isoImage.isoBaseName = "my-x11-nixos-vm";
-  isoImage.volumeID = "NIXOS_X11";
+  # --- 修改这里：使用 lib.mkForce 解决名称冲突 ---
+  image.baseName = lib.mkForce "my-x11-nixos-vm";
+  isoImage.isoBaseName = lib.mkForce "my-x11-nixos-vm";
+  isoImage.volumeID = lib.mkForce "NIXOS_X11";
+
+
 
   # 5. 允许免密码 sudo，方便在 Live 环境下进行运维或安装
   security.sudo.wheelNeedsPassword = false;
