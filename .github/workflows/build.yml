@@ -76,12 +76,16 @@ jobs:
       # 7. 构建 NixOS LiveCD ISO
       - name: Build NixOS LiveCD ISO
         run: |
-          # 若你有自定义的 iso.nix 配置，可替换为: nix-build '<nixpkgs/nixos>' -A config.system.build.isoImage -I nixos-config=./iso.nix -o iso-result
-          # 默认使用 nixos 的 installation-cd-graphical 构建 ISO:
-          nix-build '<nixpkgs/nixos>' -A config.system.build.isoImage -I nixos-config='<nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-graphical-plasma5.nix>' -o iso-result
-          
-          # 将生成的 ISO 软链接复制为规范命名的文件
+          # 基于 iso.nix 构建 livecd iso
+          nix-build '<nixpkgs/nixos>' \
+            -A config.system.build.isoImage \
+            -I nixos-config=./iso.nix \
+            -o iso-result
+
+          # 找到构建产物目录中的 .iso 文件并规范命名
           cp iso-result/iso/*.iso my-x11-nixos-vm.iso
+          
+      
 
       # 8. 将大于 2GB 的 ISO 切割为多个 1.5GB 的文件
       - name: Split ISO
