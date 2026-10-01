@@ -208,6 +208,7 @@
     ibus-with-plugins
     kdePackages.discover   
     kdePackages.kdenetwork-filesharing
+    kdePackages.konsole
     mate.pluma
     meld   
     perl
