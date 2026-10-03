@@ -214,6 +214,7 @@
     perl
     podman
     samba
+    tilix
     trojan-go
     v2ray
     v2raya
